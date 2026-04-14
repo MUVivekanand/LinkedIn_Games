@@ -138,13 +138,102 @@
 }
 
 @media (max-width: 768px) {
+  .leaderboard-container {
+    padding: 1rem;
+  }
+
+  .leaderboard-wrapper {
+    padding: 2rem 1.5rem;
+  }
+
+  .leaderboard-title {
+    font-size: 2rem;
+  }
+
+  .leaderboard-subtitle {
+    font-size: 1rem;
+    margin-bottom: 2rem;
+  }
+
   .podium {
     flex-direction: column;
     align-items: center;
   }
 
+  .podium-card {
+    min-width: 100%;
+    max-width: 350px;
+    padding: 2rem 1.5rem;
+  }
+
   .rank-1, .rank-2, .rank-3 {
     order: initial;
     transform: scale(1);
+  }
+
+  .rank-1:hover, .rank-2:hover, .rank-3:hover {
+    transform: translateY(-5px);
+  }
+
+  .player-avatar {
+    width: 80px;
+    height: 80px;
+    font-size: 2.5rem;
+  }
+
+  .player-name {
+    font-size: 1.5rem;
+  }
+
+  .rank-title {
+    font-size: 1rem;
+  }
+
+  .points-number {
+    font-size: 2.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .leaderboard-wrapper {
+    padding: 1.5rem 1rem;
+  }
+
+  .leaderboard-title {
+    font-size: 1.6rem;
+  }
+
+  .leaderboard-subtitle {
+    font-size: 0.9rem;
+  }
+
+  .podium-card {
+    padding: 1.5rem 1rem;
+  }
+
+  .rank-badge {
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+    top: -10px;
+    right: -10px;
+  }
+
+  .player-avatar {
+    width: 70px;
+    height: 70px;
+    font-size: 2rem;
+  }
+
+  .player-name {
+    font-size: 1.3rem;
+  }
+
+  .points-number {
+    font-size: 2rem;
+  }
+
+  .points-label {
+    font-size: 0.9rem;
   }
 }

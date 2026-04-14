@@ -13,15 +13,55 @@ if (!isProduction && typeof window !== 'undefined') {
   if (stored) {
     try {
       mockRows = JSON.parse(stored)
+      // Clean up duplicates on load
+      mockRows = removeDuplicates(mockRows)
+      saveToLocalStorage()
     } catch (e) {
       mockRows = []
     }
   }
 }
 
+function removeDuplicates(rows) {
+  const seen = new Map()
+  const uniqueRows = []
+  
+  // Keep only the first occurrence of each date+game combination
+  for (const row of rows) {
+    const key = `${row.date}-${row.game}`
+    if (!seen.has(key)) {
+      seen.set(key, true)
+      uniqueRows.push(row)
+    }
+  }
+  
+  return uniqueRows
+}
+
 function saveToLocalStorage() {
   if (typeof window !== 'undefined') {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(mockRows))
+  }
+}
+
+export async function cleanupDuplicates() {
+  if (isProduction) {
+    const response = await fetch(`${API_URL}/cleanup`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' }
+    })
+    return await response.json()
+  } else {
+    // Local development - clean duplicates
+    const originalCount = mockRows.length
+    mockRows = removeDuplicates(mockRows)
+    saveToLocalStorage()
+    const deletedCount = originalCount - mockRows.length
+    return { 
+      success: true, 
+      deletedCount,
+      message: `Removed ${deletedCount} duplicate entries. Refresh to see changes.`
+    }
   }
 }
 
@@ -45,6 +85,16 @@ export async function saveRow(row) {
     return await response.json()
   } else {
     // Local development - save to mock data
+    // Check for duplicate date+game combination
+    const duplicateIndex = mockRows.findIndex(
+      r => r.date === row.date && r.game === row.game && r.id !== row.id
+    )
+    
+    if (duplicateIndex >= 0) {
+      // Remove duplicate
+      mockRows.splice(duplicateIndex, 1)
+    }
+    
     const index = mockRows.findIndex(r => r.id === row.id)
     if (index >= 0) {
       mockRows[index] = row

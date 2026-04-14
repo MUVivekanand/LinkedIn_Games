@@ -43,11 +43,21 @@ export default async function handler(req, res) {
 
     if (req.method === 'POST') {
       const row = req.body
+      
+      // Remove any duplicate entries for the same date+game combination
+      await collection.deleteMany({
+        date: row.date,
+        game: row.game,
+        id: { $ne: row.id }
+      })
+      
+      // Insert or update the row
       await collection.updateOne(
         { id: row.id },
         { $set: row },
         { upsert: true }
       )
+      
       return res.status(200).json({ success: true })
     }
 
