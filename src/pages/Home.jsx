@@ -82,8 +82,6 @@ function Home() {
       alert(`Failed to save: ${error.message || 'Unknown error'}`)
     }
   }
-    }
-  }
 
   const toggleEdit = (id) => {
     const updatedRows = rows.map(row =>
