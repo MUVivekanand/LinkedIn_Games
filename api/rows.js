@@ -8,10 +8,11 @@ async function connectToDatabase() {
     return { client: cachedClient, db: cachedDb }
   }
 
-  const client = await MongoClient.connect(process.env.MONGODB_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
+  if (!process.env.MONGODB_URI) {
+    throw new Error('MONGODB_URI environment variable is not set')
+  }
+
+  const client = await MongoClient.connect(process.env.MONGODB_URI)
 
   const db = client.db(process.env.MONGODB_DB || 'Linkedin_Leaderboard')
 
@@ -45,7 +46,7 @@ export default async function handler(req, res) {
       const row = req.body
       
       // Remove isEditing field before saving to database
-      const { isEditing, ...cleanRow } = row
+      const { isEditing, _id, ...cleanRow } = row
       
       // Ensure all required fields exist
       if (!cleanRow.id || !cleanRow.date || !cleanRow.game) {
@@ -58,17 +59,10 @@ export default async function handler(req, res) {
       cleanRow.vivaaek = parseInt(cleanRow.vivaaek) || 0
       
       try {
-        // Remove any duplicate entries for the same date+game combination
-        await collection.deleteMany({
-          date: cleanRow.date,
-          game: cleanRow.game,
-          id: { $ne: cleanRow.id }
-        })
-        
-        // Insert or update the row
-        const result = await collection.updateOne(
+        // Simple upsert - just update or insert based on id
+        const result = await collection.replaceOne(
           { id: cleanRow.id },
-          { $set: cleanRow },
+          cleanRow,
           { upsert: true }
         )
         

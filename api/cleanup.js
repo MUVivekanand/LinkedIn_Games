@@ -8,10 +8,11 @@ async function connectToDatabase() {
     return { client: cachedClient, db: cachedDb }
   }
 
-  const client = await MongoClient.connect(process.env.MONGODB_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
+  if (!process.env.MONGODB_URI) {
+    throw new Error('MONGODB_URI environment variable is not set')
+  }
+
+  const client = await MongoClient.connect(process.env.MONGODB_URI)
 
   const db = client.db(process.env.MONGODB_DB || 'Linkedin_Leaderboard')
 
