@@ -71,13 +71,17 @@ function Home() {
   const saveRow = async (id) => {
     const row = rows.find(r => r.id === id)
     try {
-      await apiSaveRow(row)
+      const result = await apiSaveRow(row)
+      console.log('Save result:', result)
       const updatedRows = rows.map(r =>
         r.id === id ? { ...r, isEditing: false } : r
       )
       setRows(updatedRows)
     } catch (error) {
       console.error('Error saving row:', error)
+      alert(`Failed to save: ${error.message || 'Unknown error'}`)
+    }
+  }
     }
   }
 

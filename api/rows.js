@@ -44,26 +44,55 @@ export default async function handler(req, res) {
     if (req.method === 'POST') {
       const row = req.body
       
-      // Remove any duplicate entries for the same date+game combination
-      await collection.deleteMany({
-        date: row.date,
-        game: row.game,
-        id: { $ne: row.id }
-      })
+      // Remove isEditing field before saving to database
+      const { isEditing, ...cleanRow } = row
       
-      // Insert or update the row
-      await collection.updateOne(
-        { id: row.id },
-        { $set: row },
-        { upsert: true }
-      )
+      // Ensure all required fields exist
+      if (!cleanRow.id || !cleanRow.date || !cleanRow.game) {
+        return res.status(400).json({ error: 'Missing required fields: id, date, or game' })
+      }
       
-      return res.status(200).json({ success: true })
+      // Ensure numeric fields are numbers
+      cleanRow.kirukku = parseInt(cleanRow.kirukku) || 0
+      cleanRow.srinathi = parseInt(cleanRow.srinathi) || 0
+      cleanRow.vivaaek = parseInt(cleanRow.vivaaek) || 0
+      
+      try {
+        // Remove any duplicate entries for the same date+game combination
+        await collection.deleteMany({
+          date: cleanRow.date,
+          game: cleanRow.game,
+          id: { $ne: cleanRow.id }
+        })
+        
+        // Insert or update the row
+        const result = await collection.updateOne(
+          { id: cleanRow.id },
+          { $set: cleanRow },
+          { upsert: true }
+        )
+        
+        return res.status(200).json({ 
+          success: true, 
+          modified: result.modifiedCount,
+          upserted: result.upsertedCount 
+        })
+      } catch (dbError) {
+        console.error('MongoDB operation error:', dbError)
+        return res.status(500).json({ 
+          error: 'Database operation failed', 
+          details: dbError.message 
+        })
+      }
     }
 
     return res.status(405).json({ error: 'Method not allowed' })
   } catch (error) {
     console.error('Database error:', error)
-    return res.status(500).json({ error: 'Database error' })
+    return res.status(500).json({ 
+      error: 'Database error', 
+      message: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    })
   }
 }
