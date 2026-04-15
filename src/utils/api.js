@@ -131,7 +131,7 @@ export async function fetchLeaderboard() {
     })
 
     const leaderboard = [
-      { name: 'kirukku', totalPoints: totals.kirukku },
+      { name: 'Athisaya Abi', totalPoints: totals.kirukku },
       { name: 'srinathi', totalPoints: totals.srinathi },
       { name: 'vivaaek', totalPoints: totals.vivaaek }
     ].sort((a, b) => b.totalPoints - a.totalPoints)

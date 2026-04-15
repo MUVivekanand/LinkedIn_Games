@@ -47,7 +47,7 @@ function Home() {
         id: `${today}-${game}`,
         date: today,
         game,
-        kirukku: 0,
+        athisayaAbi: 0,
         srinathi: 0,
         vivaaek: 0,
         isEditing: false
@@ -115,7 +115,7 @@ function Home() {
               <tr>
                 <th>Date</th>
                 <th>Game</th>
-                <th>Kirukku</th>
+                <th>Athisaya Abi</th>
                 <th>Srinathi</th>
                 <th>Vivaaek</th>
                 <th>Actions</th>
@@ -130,12 +130,12 @@ function Home() {
                     {row.isEditing ? (
                       <input
                         type="number"
-                        value={row.kirukku}
-                        onChange={(e) => updatePoints(row.id, 'kirukku', e.target.value)}
+                        value={row.athisayaAbi}
+                        onChange={(e) => updatePoints(row.id, 'athisayaAbi', e.target.value)}
                         className="score-input"
                       />
                     ) : (
-                      <span className="score">{row.kirukku}</span>
+                      <span className="score">{row.athisayaAbi}</span>
                     )}
                   </td>
                   <td>

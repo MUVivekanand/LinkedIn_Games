@@ -19,7 +19,12 @@ function Leaderboard() {
   const loadLeaderboard = async () => {
     try {
       const data = await apiGetLeaderboard()
-      setLeaderboard(data)
+      // Map kirukku to Athisaya Abi in frontend display
+      const mappedData = data.map(player => ({
+        ...player,
+        name: player.name === 'kirukku' ? 'Athisaya Abi' : player.name
+      }))
+      setLeaderboard(mappedData)
     } catch (error) {
       console.error('Error fetching leaderboard:', error)
     } finally {
