@@ -15,7 +15,12 @@ function Home() {
   const loadRows = async () => {
     try {
       const data = await apiGetRows()
-      setRows(data)
+      // Map kirukku field to athisayaAbi for frontend display
+      const mappedData = data.map(row => ({
+        ...row,
+        athisayaAbi: row.kirukku || 0
+      }))
+      setRows(mappedData)
     } catch (error) {
       console.error('Error fetching rows:', error)
     } finally {
@@ -48,6 +53,7 @@ function Home() {
         date: today,
         game,
         athisayaAbi: 0,
+        kirukku: 0,
         srinathi: 0,
         vivaaek: 0,
         isEditing: false
@@ -71,7 +77,12 @@ function Home() {
   const saveRow = async (id) => {
     const row = rows.find(r => r.id === id)
     try {
-      const result = await apiSaveRow(row)
+      // Map athisayaAbi back to kirukku for backend
+      const backendRow = {
+        ...row,
+        kirukku: row.athisayaAbi || 0
+      }
+      const result = await apiSaveRow(backendRow)
       console.log('Save result:', result)
       const updatedRows = rows.map(r =>
         r.id === id ? { ...r, isEditing: false } : r
